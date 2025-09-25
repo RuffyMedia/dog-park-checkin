@@ -6,16 +6,35 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "seed:parks": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\" scripts/seedParks.ts",
+    "seed:friends": "ts-node --esm scripts/seedFriends.ts",
+    "seed:events": "ts-node --esm scripts/seedEvents.ts"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-navigation/bottom-tabs": "^7.4.7",
+    "@react-navigation/native": "^7.1.17",
+    "@react-navigation/native-stack": "^7.3.26",
     "expo": "~54.0.10",
+    "expo-image-picker": "~17.0.8",
+    "expo-location": "~19.0.7",
+    "expo-notifications": "^0.32.11",
     "expo-status-bar": "~3.0.8",
+    "firebase": "^12.3.0",
+    "firebase-functions": "^6.4.0",
     "react": "19.1.0",
-    "react-native": "0.81.4"
+    "react-native": "0.81.4",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-reanimated": "~4.1.0",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
+    "dotenv": "^17.2.2",
+    "firebase-admin": "^13.5.0",
+    "ts-node": "^10.9.2",
     "typescript": "~5.9.2"
   },
   "private": true
