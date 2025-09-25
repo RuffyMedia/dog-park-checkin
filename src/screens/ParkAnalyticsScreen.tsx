@@ -12,7 +12,6 @@ import {
   VictoryAxis,
   VictoryBar,
   VictoryChart,
-  VictoryTheme,
 } from 'victory-native';
 import {
   collection,
@@ -278,7 +277,6 @@ const ParkAnalyticsScreen = () => {
           ) : (
             <View style={styles.chartCard}>
               <VictoryChart
-                theme={VictoryTheme.material}
                 domainPadding={{ x: 12, y: 12 }}
                 width={350}
                 height={260}
