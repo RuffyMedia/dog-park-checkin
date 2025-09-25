@@ -10,6 +10,7 @@ import DogProfileSetupScreen from '../screens/auth/DogProfileSetupScreen';
 import CheckInScreen from '../screens/CheckInScreen';
 import ParkScreen from '../screens/ParkScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import ParkAnalyticsScreen from '../screens/ParkAnalyticsScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MainTabParamList, RootStackParamList } from './types';
 
@@ -36,6 +37,7 @@ const MainTabNavigator = ({ route }: MainTabNavigatorProps) => {
       }}
     >
       <Tab.Screen name="Park" component={ParkScreen} />
+      <Tab.Screen name="Park Analytics" component={ParkAnalyticsScreen} />
       <Tab.Screen name="Check-In" component={CheckInScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

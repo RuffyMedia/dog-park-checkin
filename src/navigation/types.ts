@@ -11,6 +11,7 @@ export type RootStackParamList = {
 
 export type MainTabParamList = {
   Park: undefined;
+  'Park Analytics': undefined;
   'Check-In': undefined;
   Profile: undefined;
 };
