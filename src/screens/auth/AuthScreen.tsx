@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import { useAuth } from '../../context/AuthContext';
+import { sendPasswordReset } from '../../services/auth';
 
 const AuthScreen = () => {
   const { handleSignIn, handleSignUp } = useAuth();
@@ -19,9 +20,32 @@ const AuthScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const toggleMode = () => {
     setMode(current => (current === 'login' ? 'signup' : 'login'));
+  };
+
+  const handleForgotPassword = async () => {
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail) {
+      Alert.alert('Enter your email', 'Type your email address above, then tap Forgot Password.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      Alert.alert('Invalid email', 'Please enter a valid email address.');
+      return;
+    }
+
+    try {
+      await sendPasswordReset(trimmedEmail);
+      Alert.alert('Email sent', `A password reset link has been sent to ${trimmedEmail}.`);
+    } catch (error) {
+      Alert.alert('Reset failed', error instanceof Error ? error.message : String(error));
+    }
   };
 
   const handleSubmit = async () => {
@@ -70,6 +94,7 @@ const AuthScreen = () => {
             value={name}
             onChangeText={setName}
             autoCapitalize="words"
+            autoComplete="name"
             style={styles.input}
             returnKeyType="next"
             accessibilityLabel="Name"
@@ -82,27 +107,52 @@ const AuthScreen = () => {
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
+          autoComplete="email"
           style={styles.input}
           returnKeyType="next"
           textContentType="emailAddress"
           accessibilityLabel="Email"
         />
-        <TextInput
-          placeholder="Password"
-          placeholderTextColor="#9ca3af"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          style={styles.input}
-          returnKeyType="done"
-          textContentType="password"
-          accessibilityLabel="Password"
-        />
+        <View style={styles.passwordRow}>
+          <TextInput
+            placeholder="Password"
+            placeholderTextColor="#9ca3af"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+            style={[styles.input, styles.passwordInput]}
+            returnKeyType="done"
+            onSubmitEditing={handleSubmit}
+            textContentType={mode === 'signup' ? 'newPassword' : 'password'}
+            accessibilityLabel="Password"
+          />
+          <TouchableOpacity
+            style={styles.showPasswordButton}
+            onPress={() => setShowPassword(v => !v)}
+            accessibilityRole="button"
+            accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+          >
+            <Text style={styles.showPasswordText}>{showPassword ? 'Hide' : 'Show'}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {mode === 'login' ? (
+          <TouchableOpacity
+            onPress={handleForgotPassword}
+            accessibilityRole="button"
+            style={styles.forgotPasswordButton}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+          </TouchableOpacity>
+        ) : null}
+
         <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
           onPress={handleSubmit}
           disabled={loading}
           accessibilityRole="button"
+          accessibilityLabel={mode === 'login' ? 'Sign in' : 'Create account'}
         >
           <Text style={styles.buttonText}>{loading ? 'Please wait...' : 'Continue'}</Text>
         </TouchableOpacity>
@@ -148,6 +198,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 12,
   },
+  passwordRow: {
+    position: 'relative',
+  },
+  passwordInput: {
+    paddingRight: 64,
+  },
+  showPasswordButton: {
+    position: 'absolute',
+    right: 16,
+    top: 14,
+  },
+  showPasswordText: {
+    fontSize: 14,
+    color: '#2563eb',
+    fontWeight: '500',
+  },
+  forgotPasswordButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 12,
+    marginTop: -4,
+  },
+  forgotPasswordText: {
+    color: '#2563eb',
+    fontSize: 13,
+    fontWeight: '500',
+  },
   button: {
     backgroundColor: '#2563eb',
     paddingVertical: 14,
@@ -172,4 +248,3 @@ const styles = StyleSheet.create({
 });
 
 export default AuthScreen;
-

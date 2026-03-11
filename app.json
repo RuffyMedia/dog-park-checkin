@@ -13,18 +13,67 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dogparkcheckin.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Dog Park Check-In uses your location to detect nearby dog parks and check in your pup automatically.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Dog Park Check-In uses your location to detect nearby dog parks.",
+        "NSPhotoLibraryUsageDescription": "Dog Park Check-In accesses your photo library to set your dog's profile picture.",
+        "NSCameraUsageDescription": "Dog Park Check-In uses your camera to take a profile photo of your dog.",
+        "UIBackgroundModes": ["remote-notification"]
+      }
     },
     "android": {
+      "package": "com.dogparkcheckin.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": true,
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#1f2937",
+          "sounds": [],
+          "androidMode": "default",
+          "androidCollapsedTitle": "Dog Park Check-In"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Dog Park Check-In uses your location to detect nearby dog parks.",
+          "locationWhenInUsePermission": "Dog Park Check-In uses your location to detect nearby dog parks and check in your pup."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Dog Park Check-In accesses your photos to set your dog's profile picture.",
+          "cameraPermission": "Dog Park Check-In uses your camera to take a photo of your dog."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-eas-project-id"
+      }
     }
   }
 }

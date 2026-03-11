@@ -1,8 +1,9 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useMemo } from 'react';
+import { createRef, useMemo } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useAuth } from '../context/AuthContext';
 import AuthScreen from '../screens/auth/AuthScreen';
@@ -16,6 +17,8 @@ import { MainTabParamList, RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
+
+export const navigationRef = createRef<NavigationContainerRef<RootStackParamList>>();
 
 type MainTabNavigatorProps = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
@@ -36,10 +39,46 @@ const MainTabNavigator = ({ route }: MainTabNavigatorProps) => {
         },
       }}
     >
-      <Tab.Screen name="Park" component={ParkScreen} />
-      <Tab.Screen name="Park Analytics" component={ParkAnalyticsScreen} />
-      <Tab.Screen name="Check-In" component={CheckInScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen
+        name="Park"
+        component={ParkScreen}
+        options={{
+          tabBarLabel: 'Park',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="dog-side" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Park Analytics"
+        component={ParkAnalyticsScreen}
+        options={{
+          tabBarLabel: 'Analytics',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="bar-chart-2" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Check-In"
+        component={CheckInScreen}
+        options={{
+          tabBarLabel: 'Check-In',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="check-circle" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="user" size={size} color={color} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };
@@ -76,7 +115,7 @@ const AppNavigator = () => {
 
   if (navigatorState === 'auth') {
     return (
-      <NavigationContainer key="auth">
+      <NavigationContainer key="auth" ref={navigationRef}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Auth" component={AuthScreen} />
         </Stack.Navigator>
@@ -85,7 +124,7 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer key={navigatorState}>
+    <NavigationContainer key={navigatorState} ref={navigationRef}>
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={navigatorState === 'dogProfile' ? 'DogProfile' : 'Main'}>
         <Stack.Screen
           name="Main"
@@ -112,4 +151,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f5f9',
   },
 });
-

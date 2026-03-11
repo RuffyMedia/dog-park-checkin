@@ -147,6 +147,8 @@ const ParkScreen = () => {
             source={{ uri: item.photoUrl }}
             style={styles.dogImage}
             accessibilityLabel={`${item.name} photo`}
+            onError={() => undefined}
+            defaultSource={require('../../assets/icon.png')}
           />
         ) : (
           <View style={[styles.dogImage, styles.placeholderImage]}>
@@ -243,7 +245,12 @@ const ParkScreen = () => {
               onPress={() => handleSelectPark(park)}
             >
               <View style={styles.tabContent}>
-                <Image source={{ uri: park.image }} style={styles.tabImage} accessibilityLabel={`${park.name} photo`} />
+                <Image
+                  source={{ uri: park.image }}
+                  style={styles.tabImage}
+                  accessibilityLabel={`${park.name} photo`}
+                  onError={() => undefined}
+                />
                 <Text style={[styles.tabLabel, isSelected ? styles.tabLabelActive : null]}>{park.name}</Text>
               </View>
             </TouchableOpacity>

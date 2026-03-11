@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Location from 'expo-location';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, shadows } from '../constants/theme';
 import { addDoc, doc, getDocs, limit, query, updateDoc, where } from 'firebase/firestore';
@@ -98,7 +99,7 @@ const CheckInScreen = () => {
       }
 
       const position = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Highest,
+        accuracy: Location.Accuracy.Balanced,
       });
 
       const userPosition: ParkCoordinates = {
@@ -156,7 +157,9 @@ const CheckInScreen = () => {
       });
 
       setActiveCheckInId(docRef.id);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error) {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Check-in failed', error instanceof Error ? error.message : String(error));
     } finally {
       setSubmitting(false);
@@ -177,7 +180,9 @@ const CheckInScreen = () => {
       });
 
       setActiveCheckInId(null);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error) {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Check-out failed', error instanceof Error ? error.message : String(error));
     } finally {
       setSubmitting(false);
@@ -219,7 +224,11 @@ const CheckInScreen = () => {
           </View>
 
           <TouchableOpacity
-            style={[styles.button, buttonDisabled ? styles.buttonDisabled : null]}
+            style={[
+              styles.button,
+              activeCheckInId ? styles.buttonCheckOut : null,
+              buttonDisabled ? styles.buttonDisabled : null,
+            ]}
             onPress={handlePress}
             disabled={buttonDisabled}
             accessibilityRole="button"
@@ -286,6 +295,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     elevation: 6,
   },
+  buttonCheckOut: {
+    backgroundColor: colors.danger,
+    shadowColor: colors.danger,
+  },
   buttonDisabled: {
     opacity: 0.6,
   },
@@ -298,4 +311,3 @@ const styles = StyleSheet.create({
 });
 
 export default CheckInScreen;
-

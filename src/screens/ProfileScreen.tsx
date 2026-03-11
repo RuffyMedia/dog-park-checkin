@@ -1,10 +1,11 @@
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { CompositeNavigationProp, NavigationProp, useNavigation } from '@react-navigation/native';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Switch,
@@ -42,6 +43,7 @@ const ProfileScreen = () => {
   const [checkinHistory, setCheckinHistory] = useState<CheckInHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [historyError, setHistoryError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const accountName = useMemo(() => {
     if (userProfile?.name?.trim()) {
@@ -76,8 +78,7 @@ const ProfileScreen = () => {
     }
   };
 
-  useEffect(() => {
-    const loadHistory = async () => {
+  const loadHistory = useCallback(async () => {
       if (!currentUser?.uid || !dogProfile?.dogProfileId) {
         setCheckinHistory([]);
         setHistoryLoading(false);
@@ -136,11 +137,18 @@ const ProfileScreen = () => {
         setHistoryError(error instanceof Error ? error.message : 'Unable to load check-ins.');
       } finally {
         setHistoryLoading(false);
+        setRefreshing(false);
       }
-    };
-
-    loadHistory();
   }, [currentUser?.uid, dogProfile?.dogProfileId, profileLoading]);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadHistory();
+  }, [loadHistory]);
+
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
 
   const historyContent = useMemo(() => {
     if (historyLoading) {
@@ -187,7 +195,10 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+      >
         <Text style={styles.title}>Profile</Text>
 
         <View style={styles.card}>

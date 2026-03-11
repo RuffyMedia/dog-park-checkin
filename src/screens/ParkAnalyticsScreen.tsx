@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -55,16 +57,18 @@ const formatHourRange = (hour: number) => {
 
 const createEmptyMatrix = () => Array.from({ length: 7 }, () => new Array(24).fill(0));
 
+const CHART_WIDTH = Dimensions.get('window').width - 64;
+
 const ParkAnalyticsScreen = () => {
   const [selectedPark, setSelectedPark] = useState<Park>(MONTEREY_COUNTY_DOG_PARKS[0]);
   const [selectedDay, setSelectedDay] = useState<string>('All Days');
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [dataMatrix, setDataMatrix] = useState<number[][]>(createEmptyMatrix());
   const [totalCheckins, setTotalCheckins] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadCheckins = async () => {
+  const loadCheckins = useCallback(async () => {
       setLoading(true);
       setError(null);
 
@@ -105,11 +109,18 @@ const ParkAnalyticsScreen = () => {
         setError('Unable to load analytics. Pull down to refresh.');
       } finally {
         setLoading(false);
+        setRefreshing(false);
       }
-    };
-
-    loadCheckins();
   }, [selectedPark]);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadCheckins();
+  }, [loadCheckins]);
+
+  useEffect(() => {
+    loadCheckins();
+  }, [loadCheckins]);
 
   const selectedDayIndex = useMemo(() => {
     if (selectedDay === 'All Days') {
@@ -205,7 +216,10 @@ const ParkAnalyticsScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top'] }>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+      >
         <Text style={styles.title}>Park Analytics</Text>
         <Text style={styles.subtitle}>
           Understand crowd patterns to pick the perfect play time for your pup.
@@ -280,7 +294,7 @@ const ParkAnalyticsScreen = () => {
             <View style={styles.chartCard}>
               <VictoryChart
                 domainPadding={{ x: 12, y: 12 }}
-                width={350}
+                width={CHART_WIDTH}
                 height={260}
               >
                 <VictoryAxis

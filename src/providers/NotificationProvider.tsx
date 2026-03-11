@@ -8,9 +8,29 @@ import { NotificationSettings } from '../types/firestore';
 import { saveNotificationToken, updateNotificationSettings } from '../services/userService';
 
 if (Platform.OS === 'android') {
-  Notifications.setNotificationChannelAsync('default', {
-    name: 'default',
-    importance: Notifications.AndroidImportance.MAX,
+  Notifications.setNotificationChannelAsync('friend-checkins', {
+    name: 'Friend Check-ins',
+    description: 'Alerts when your friends check in at a dog park.',
+    importance: Notifications.AndroidImportance.HIGH,
+    enableLights: true,
+    lightColor: '#1f2937',
+    enableVibrate: true,
+    vibrationPattern: [0, 250, 250, 250],
+  });
+
+  Notifications.setNotificationChannelAsync('park-events', {
+    name: 'Park Events',
+    description: 'Alerts for upcoming park events hosted by friends.',
+    importance: Notifications.AndroidImportance.DEFAULT,
+    enableLights: true,
+    lightColor: '#1f2937',
+    enableVibrate: true,
+  });
+
+  Notifications.setNotificationChannelAsync('general', {
+    name: 'General',
+    description: 'General app notifications.',
+    importance: Notifications.AndroidImportance.LOW,
   });
 }
 
