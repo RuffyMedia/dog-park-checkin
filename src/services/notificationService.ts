@@ -7,13 +7,17 @@ const request = async (path: string, payload: unknown) => {
     return;
   }
 
-  await fetch(`${endpoint}${path}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+  try {
+    await fetch(`${endpoint}${path}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    console.warn(`Notification request failed for ${path}:`, error);
+  }
 };
 
 export const notifyFriendCheckin = async (payload: {

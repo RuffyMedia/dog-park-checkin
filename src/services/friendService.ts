@@ -51,10 +51,16 @@ export const addFriendByEmail = async (
     merge: true,
   });
 
+  const currentUserQuery = query(usersCollection, where('uid', '==', uid));
+  const currentUserSnapshot = await getDocs(currentUserQuery);
+  const currentUserData = currentUserSnapshot.empty
+    ? { email: '', name: '' }
+    : currentUserSnapshot.docs[0].data() as UserDocument;
+
   await setDoc(doc(userFriendsCollection(friendRecord.friendUid), uid), {
     friendUid: uid,
-    email: '',
-    name: '',
+    email: currentUserData.email,
+    name: currentUserData.name,
     createdAt: Date.now(),
   } satisfies FriendDocument, { merge: true });
 

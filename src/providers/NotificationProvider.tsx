@@ -44,7 +44,7 @@ const NotificationProvider = ({ children }: NotificationProviderProps) => {
 
   useEffect(() => {
     setSettings(notificationSettings ?? null);
-  }, [notificationSettings?.enabled, notificationSettings?.preferences.notifyOnFriendCheckin, notificationSettings?.preferences.notifyOnFriendEvent]);
+  }, [notificationSettings]);
 
   useEffect(() => {
     const checkPermissions = async () => {
