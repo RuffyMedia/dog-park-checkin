@@ -30,6 +30,12 @@ const AuthScreen = () => {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert('Invalid email', 'Please enter a valid email address.');
+      return;
+    }
+
     if (mode === 'signup' && !name) {
       Alert.alert('Missing information', 'Please add your name to continue.');
       return;

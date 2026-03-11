@@ -46,8 +46,19 @@ const DogProfileSetupScreen = () => {
       return;
     }
 
-    if (!name) {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
       Alert.alert('Missing details', 'Please enter your dogs name.');
+      return;
+    }
+
+    if (trimmedName.length > 100) {
+      Alert.alert('Name too long', 'Dog name must be 100 characters or fewer.');
+      return;
+    }
+
+    if (photoUrl && !photoUrl.startsWith('https://')) {
+      Alert.alert('Invalid photo URL', 'Photo URL must use HTTPS (start with https://).');
       return;
     }
 
@@ -56,17 +67,17 @@ const DogProfileSetupScreen = () => {
 
       if (userProfile?.dogProfileId) {
         await updateDogProfile(userProfile.dogProfileId, {
-          name,
-          breed,
-          temperament,
-          photoUrl,
+          name: trimmedName,
+          breed: breed.trim(),
+          temperament: temperament.trim(),
+          photoUrl: photoUrl.trim(),
         });
       } else {
         const dogProfileId = await createDogProfile({
-          name,
-          breed,
-          temperament,
-          photoUrl,
+          name: trimmedName,
+          breed: breed.trim(),
+          temperament: temperament.trim(),
+          photoUrl: photoUrl.trim(),
           ownerUid: currentUser.uid,
         });
 

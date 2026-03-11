@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler';
-import { useEffect } from 'react';
+import React, { Component, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
 import { AuthProvider } from './src/context/AuthContext';
@@ -15,24 +16,65 @@ Notifications.setNotificationHandler({
   }),
 });
 
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends Component<{ children: React.ReactNode }, ErrorBoundaryState> {
+  state: ErrorBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('App crashed:', error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={errorStyles.container}>
+          <Text style={errorStyles.title}>Something went wrong</Text>
+          <Text style={errorStyles.message}>Please restart the app and try again.</Text>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const errorStyles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
+  title: { fontSize: 20, fontWeight: '600', marginBottom: 8 },
+  message: { fontSize: 14, color: '#64748b', textAlign: 'center' },
+});
+
 const App = () => {
   useEffect(() => {
-    Notifications.addNotificationReceivedListener(notification => {
+    const receivedSub = Notifications.addNotificationReceivedListener(notification => {
       console.log('Notification received:', notification);
     });
 
-    Notifications.addNotificationResponseReceivedListener(response => {
+    const responseSub = Notifications.addNotificationResponseReceivedListener(response => {
       console.log('Notification response:', response);
     });
+
+    return () => {
+      receivedSub.remove();
+      responseSub.remove();
+    };
   }, []);
 
   return (
-    <AuthProvider>
-      <NotificationProvider>
-        <StatusBar style="dark" />
-        <AppNavigator />
-      </NotificationProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <NotificationProvider>
+          <StatusBar style="dark" />
+          <AppNavigator />
+        </NotificationProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 };
 
