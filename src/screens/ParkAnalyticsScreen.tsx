@@ -26,6 +26,7 @@ import { MONTEREY_COUNTY_DOG_PARKS, Park } from '../constants/parks';
 import { colors, shadows } from '../constants/theme';
 import { db } from '../config/firebase';
 import { CheckInDocument } from '../types/firestore';
+import { resolveTimestamp } from '../utils/timestamp';
 
 const dayNames = [
   'Sunday',
@@ -83,12 +84,7 @@ const ParkAnalyticsScreen = () => {
 
         snapshot.docs.forEach(docSnapshot => {
           const checkin = docSnapshot.data() as CheckInDocument;
-          const rawTimestamp = checkin.timestamp as unknown;
-          const timestamp = typeof rawTimestamp === 'number'
-            ? rawTimestamp
-            : typeof rawTimestamp === 'object' && rawTimestamp !== null && 'toMillis' in rawTimestamp
-              ? (rawTimestamp as { toMillis: () => number }).toMillis()
-              : 0;
+          const timestamp = resolveTimestamp(checkin.timestamp);
 
           if (!timestamp) {
             return;
@@ -225,6 +221,9 @@ const ParkAnalyticsScreen = () => {
                   key={park.parkId}
                   style={[styles.chip, isSelected ? styles.chipActive : null]}
                   onPress={() => setSelectedPark(park)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Select ${park.name}`}
+                  accessibilityState={{ selected: isSelected }}
                 >
                   <Text style={[styles.chipLabel, isSelected ? styles.chipLabelActive : null]}>
                     {park.name}
@@ -245,6 +244,9 @@ const ParkAnalyticsScreen = () => {
                   key={option}
                   style={[styles.chip, isSelected ? styles.chipActive : null]}
                   onPress={() => setSelectedDay(option)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Filter by ${option}`}
+                  accessibilityState={{ selected: isSelected }}
                 >
                   <Text style={[styles.chipLabel, isSelected ? styles.chipLabelActive : null]}>
                     {option}

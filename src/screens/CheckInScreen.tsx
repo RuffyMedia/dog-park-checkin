@@ -223,6 +223,7 @@ const CheckInScreen = () => {
             onPress={handlePress}
             disabled={buttonDisabled}
             accessibilityRole="button"
+            accessibilityLabel={activeCheckInId ? 'Check out from park' : 'Check in to park'}
           >
             <Text style={styles.buttonText}>{submitting ? 'Please wait…' : buttonLabel}</Text>
           </TouchableOpacity>

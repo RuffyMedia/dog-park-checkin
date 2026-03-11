@@ -307,6 +307,8 @@ const ProfileScreen = () => {
               style={styles.permissionButton}
               onPress={requestPermissions}
               disabled={registering}
+              accessibilityRole="button"
+              accessibilityLabel="Enable device notifications"
             >
               <Text style={styles.permissionButtonText}>
                 {registering ? 'Requesting…' : 'Enable device notifications'}
